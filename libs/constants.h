@@ -1,0 +1,17 @@
+#define btnRIGHT  0
+#define btnUP     1
+#define btnDOWN   2
+#define btnLEFT   3
+#define btnSELECT 4
+#define btnNONE   5
+
+#define TIMECONTROL_1 1L*60L*1000L
+#define TIMECONTROL_3 TIMECONTROL_1*3L
+#define TIMECONTROL_5 TIMECONTROL_1*5L
+#define TIMECONTROL_10 TIMECONTROL_1*10L
+
+#define TIME_CONTROLS TIMECONTROL_1, TIMECONTROL_3, TIMECONTROL_5, TIMECONTROL_10
+
+#define TURN_NONE -1
+#define TURN_WHITE 1
+#define TURN_BLACK 2
