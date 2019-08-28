@@ -1,8 +1,9 @@
-#include <LiquidCrystal.h>
-#include "libraries/constants.h"
-#include <Led.h>
+// ChessClockLibrary - Version: Latest 
 #include <ChessButton.h>
 #include <ChessPlayerTimer.h>
+#include <Led.h>
+#include <constants.h>
+#include <LiquidCrystal.h>
 
 unsigned long TIMECONTROLS[] = {TIME_CONTROLS};
 
@@ -32,7 +33,16 @@ ChessPlayerTimer blackTimer(0, 0, TIMECONTROLS[currentTimeControl]);
 int turn = TURN_NONE;
 
 Led led(22, 24, 26);
-ChessButton chessButton(A8);
+ChessButton chessButton(A1);
+byte smiley[8] = {
+  B00000,
+  B10001,
+  B00000,
+  B00000,
+  B10001,
+  B01110,
+  B00000,
+};
 
 int read_LCD_buttons()
 {
@@ -89,6 +99,20 @@ void printBlackTime()
   lcd.print(s);
 }
 
+void setOutOfTime()
+{
+  EngageTimer = 0;
+  // turn = TURN_FLAG;
+
+  char *s = whiteTimer.getTimeString();
+  lcd.setCursor(2, 1);
+  lcd.print(s);
+
+  if (whiteTimer.isOutOfTime()){
+  } else if (blackTimer.isOutOfTime()){
+  }
+}
+
 void loop()
 {
   lcd_key = read_LCD_buttons();
@@ -97,7 +121,8 @@ void loop()
   if (turn == TURN_NONE)
   {
     led.setColor(0, 0, 128);
-    if (port_value > 10)
+    Serial.println(port_value);
+    if (port_value <= REED_SENSOR_LIMIT)
     {
       lcd.setCursor(2, 0);
       char juststringval[16];
@@ -121,12 +146,12 @@ void loop()
 
   if (EngageTimer == 1)
   {
-    if (port_value > 10 && turn != TURN_BLACK)
+    if (port_value <= REED_SENSOR_LIMIT && turn != TURN_BLACK)
     {
       turn = TURN_BLACK;
       blackTimer.pause();
     }
-    else if (port_value <= 10 && turn != TURN_WHITE)
+    else if (port_value > REED_SENSOR_LIMIT && turn != TURN_WHITE)
     {
       turn = TURN_WHITE;
       whiteTimer.pause();
@@ -194,6 +219,7 @@ void loop()
     {
       if (whiteTimer.isOutOfTime()){
         led.setColor(255,0,0);
+        setOutOfTime();
       }else {
         whiteTimer.tick();
       }
@@ -202,11 +228,14 @@ void loop()
     {
       if (blackTimer.isOutOfTime()){
         led.setColor(255,0,0);
+        setOutOfTime();
       }else {
         blackTimer.tick();
       }
     }
   }
+
+  
 
   printWhiteTime();
   printBlackTime();
